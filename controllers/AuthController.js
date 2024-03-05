@@ -2,6 +2,7 @@ import prisma from "../database/db.config.js";
 import vine, { errors } from "@vinejs/vine";
 import { registerSchema } from "../validations/authValidation.js";
 import Utility from "../utility/Utility.js";
+import { loginSchema } from "../validations/loginSchema.js";
 
 export default class AuthController {
 	// @register controller
@@ -37,6 +38,39 @@ export default class AuthController {
 				message: "User created successfully",
 				data: newUser,
 			});
+		} catch (error) {
+			if (error instanceof errors.E_VALIDATION_ERROR) {
+				return res.status(400).json({ error: error.messages });
+			} else {
+				return res.status(500).json({
+					status: 500,
+					message: "Something went wrong, please try again later",
+				});
+			}
+		}
+	}
+
+	// @login controller
+	static async login(req, res) {
+		try {
+			const body = req.body;
+			const validator = vine.compile(loginSchema);
+			const payload = await validator.validate(body);
+
+			// check if user exists
+			const user = await prisma.user.findUnique({
+				where: {
+					email: payload.email,
+				},
+			});
+
+			// If user does not  exists, return an error
+			if (!user) {
+				return res.status(400).json({
+					status: 400,
+					message: "Invalid credentials",
+				});
+			}
 		} catch (error) {
 			if (error instanceof errors.E_VALIDATION_ERROR) {
 				return res.status(400).json({ error: error.messages });
