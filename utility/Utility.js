@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-
+import jwt from "jsonwebtoken";
 export default class Utility {
 	// Hash Password Utitliy
 	static async hashPassword(password) {
@@ -9,9 +9,11 @@ export default class Utility {
 
 	// Compare Password Utility
 	static async comparePassword(password, hash) {
-		return bcrypt.compare(password, hash, (err, imatch) => {
-			if (err) throw err;
-			return imatch;
-		});
+		return await bcrypt.compare(password, hash);
+	}
+
+	// Generate Token Utility
+	static generateToken(payload) {
+		return jwt.sign(payload, process.env.SECRET, { expiresIn: "1d" });
 	}
 }
