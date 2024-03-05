@@ -11,9 +11,32 @@ export default class AuthController {
 			const validator = vine.compile(registerSchema);
 			const payload = await validator.validate(body);
 
-   // hash password 
-   payload.password = await Utility.hashPassword(payload.password)
-   return res.json({payload})
+			// check if user alredy exists
+			const user = await prisma.user.findUnique({
+				where: {
+					email: payload.email,
+				},
+			});
+
+			// If user already exists, return an error
+			if (user) {
+				return res.status(400).json({
+					errors: {
+						email: "Email already taken please user another one",
+					},
+				});
+			}
+			// hash password
+			payload.password = await Utility.hashPassword(payload.password);
+			const newUser = await prisma.user.create({
+				data: payload,
+			});
+
+			return res.status(200).json({
+				status: 200,
+				message: "User created successfully",
+				data: newUser,
+			});
 		} catch (error) {
 			if (error instanceof errors.E_VALIDATION_ERROR) {
 				return res.status(400).json({ error: error.messages });
