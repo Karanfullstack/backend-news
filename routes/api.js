@@ -10,5 +10,5 @@ router.post("/auth/login", AuthController.login);
 
 // Profile Route
 router.get("/auth/profile", authMiddleware, ProfileController.index);
-
+router.put("/auth/profile/:id", authMiddleware, ProfileController.update);
 export default router;

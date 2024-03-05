@@ -5,5 +5,5 @@ import { CustomErrorReporter } from "./CustomErrorReporter.js";
 vine.errorReporter = () => new CustomErrorReporter();
 export const loginSchema = vine.object({
 	email: vine.string().email(),
-	password: vine.string().minLength(2).maxLength(191).confirmed(),
+	password: vine.string().minLength(2).maxLength(191),
 });
