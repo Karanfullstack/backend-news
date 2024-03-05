@@ -50,7 +50,7 @@ export default class AuthController {
 		}
 	}
 
-	// @login controller
+	// @Login controller
 	static async login(req, res) {
 		try {
 			const body = req.body;
@@ -84,11 +84,12 @@ export default class AuthController {
 				name: user.name,
 				profile: user.profile,
 			};
+
 			const token = Utility.generateToken(data);
 			return res.status(200).json({
 				status: 200,
 				message: "Logged in",
-				acccessToken: token,
+				acccessToken: `Bearer ${token}`,
 			});
 		} catch (error) {
 			if (error instanceof errors.E_VALIDATION_ERROR) {

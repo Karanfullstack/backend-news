@@ -16,4 +16,12 @@ export default class Utility {
 	static generateToken(payload) {
 		return jwt.sign(payload, process.env.SECRET, { expiresIn: "1d" });
 	}
+
+	// Verify Token Utility
+	static verifyToken(token) {
+		return jwt.verify(token, process.env.SECRET, (err, decoded) => {
+			if (err) throw err;
+			return decoded;
+		});
+	}
 }
