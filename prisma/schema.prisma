@@ -20,6 +20,18 @@ model User {
   email String @unique @db.VarChar(191)
   password String
   profile String?
+  News News[]
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+}
+
+model News {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(300)
+  content String
+  image String? @db.VarChar(300)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id Int
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 }
