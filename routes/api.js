@@ -2,6 +2,7 @@ import { Router } from "express";
 import AuthController from "../controllers/AuthController.js";
 import { ProfileController } from "../controllers/ProfileController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import { NewsController } from "../controllers/NewsController.js";
 
 const router = Router();
 
@@ -14,5 +15,5 @@ router.get("/auth/profile", authMiddleware, ProfileController.index);
 router.put("/auth/profile/:id", authMiddleware, ProfileController.update);
 
 // News Routes
-
+router.post("/news", NewsController.store);
 export default router;

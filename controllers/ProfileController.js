@@ -57,7 +57,6 @@ export class ProfileController {
 				profile: fileName,
 			});
 		} catch (error) {
-			// how to remove file
 			fs.unlinkSync(path);
 			console.log(error);
 			return res.status(500).json({ message: "Error in Profile Controller" });
