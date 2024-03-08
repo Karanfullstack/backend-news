@@ -1,6 +1,7 @@
 import { newsValidation } from "../validations/newsValidation.js";
 import vine, { errors } from "@vinejs/vine";
 import Utility from "../utility/Utility.js";
+import prisma from "../database/db.config.js";
 export class NewsController {
 	// Create News Controller
 	static async store(req, res) {
@@ -32,8 +33,14 @@ export class NewsController {
 						.json({ error: { message: "Error in uploading image" } });
 				}
 			});
+			// Add image to payload and user_id
+			payload.image = fileName;
+			payload.user_id = user.id;
 
-			return res.json({ ...payload, image: fileName });
+			const news = await prisma.news.create({
+				data: payload,
+			});
+			return res.status(201).json({ success: true, data: news });
 		} catch (error) {
 			if (error instanceof errors.E_VALIDATION_ERROR) {
 				return res.status(400).json({ error: error.messages });
@@ -42,7 +49,15 @@ export class NewsController {
 	}
 
 	// Get News Controller
-	static async index(req, res) {}
+	static async index(req, res) {
+		try {
+			const news = await prisma.news.findMany({});
+			const data = news.map((item) => Utility.transformResponse(item));
+			return res.status(200).json({ success: true, data });
+		} catch (error) {
+			return res.status(500).json({ error: { message: error.message } });
+		}
+	}
 
 	// Update News Controller
 	static async update(req, res) {}

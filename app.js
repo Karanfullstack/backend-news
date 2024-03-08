@@ -6,6 +6,9 @@ const app = express();
 // middlewares
 dotenv.config();
 app.use(express.json());
+// static path
+
+app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload());
 

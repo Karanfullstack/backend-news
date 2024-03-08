@@ -23,8 +23,6 @@ export default class Utility {
 		return jwt.verify(token, process.env.SECRET);
 	}
 
-	// Utility to convert bytes to megabytes
-
 	// Utility for Image Validation
 	static validateImage(size, mime) {
 		const bytes = size / (1024 * 1024);
@@ -34,5 +32,18 @@ export default class Utility {
 			return { message: "File type not supported" };
 		}
 		return null;
+	}
+
+	// Utility for Transform Response
+	static transformResponse(data) {
+		return {
+			id: data.id,
+			heading: data.title,
+			news: data.content,
+			user_id: data.user_id,
+			image: `${process.env.APP_URL}/images/${data.image}`,
+			created_at: data.created_at,
+			updated_at: data.updated_at,
+		};
 	}
 }
