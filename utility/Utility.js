@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { supportedMimeTypes } from "../constants/ImageType.js";
+import fs from "fs";
 export default class Utility {
 	// Hash Password Utitliy
 	static async hashPassword(password) {
@@ -32,5 +33,39 @@ export default class Utility {
 			return { message: "File type not supported" };
 		}
 		return null;
+	}
+
+	// Utility for Image Upload
+	static uploadImage(image) {
+		const ext = image.name.split(".").pop();
+		const fileName = Date.now() + "." + ext;
+		const path = process.cwd() + "/public/images/" + fileName;
+
+		image.mv(path, (err) => {
+			if (err) {
+				throw new Error("Errror	uploading image");
+			}
+		});
+		return fileName;
+	}
+
+	// Utility of Delete Image
+	static deleteImage(fileName) {
+		const path = process.cwd() + "/public/images/" + fileName;
+		if (fs.existsSync(path)) {
+			fs.unlinkSync(path);
+		}
+	}
+
+	// Utility for Pagination
+	static paginate(page, limit) {
+		if (page <= 0) {
+			page = 1;
+		}
+		if (limit <= 0 || limit > 100) {
+			limit = 10;
+		}
+		const offset = (page - 1) * limit;
+		return { offset, limit, page };
 	}
 }
