@@ -2,6 +2,7 @@ import { newsValidation } from "../validations/newsValidation.js";
 import vine, { errors } from "@vinejs/vine";
 import Utility from "../utility/Utility.js";
 import prisma from "../database/db.config.js";
+import { ResponseTransform } from "../response/response.js";
 export class NewsController {
 	// Create News Controller
 	static async store(req, res) {
@@ -80,7 +81,7 @@ export class NewsController {
 					},
 				},
 			});
-			const data = news.map((item) => Utility.transformResponse(item));
+			const data = news.map((item) => ResponseTransform.response(item));
 			const newsCount = await prisma.news.count();
 			const totalPages = Math.ceil(newsCount / limit);
 			const hasMore = page < totalPages;
@@ -97,14 +98,45 @@ export class NewsController {
 		}
 	}
 
+	// Get News By ID Controller
+	static async show(req, res) {
+		try {
+			const id = req.params.id;
+			const news = await prisma.news.findUnique({
+				where: {
+					id: Number(id),
+				},
+				include: {
+					user: {
+						select: {
+							id: true,
+							email: true,
+							name: true,
+							profile: true,
+						},
+					},
+				},
+			});
+			if (!news) {
+				return res.status(404).json({
+					success: false,
+					status: 404,
+					error: { message: "News not found" },
+				});
+			}
+			return res
+				.status(200)
+				.json({ success: true, data: ResponseTransform.response(news) });
+		} catch (error) {
+			return res.status(500).json({ error: { message: error.message } });
+		}
+	}
+
 	// Update News Controller
 	static async update(req, res) {}
 
 	// Delete News Controller
 	static async destroy(req, res) {}
-
-	// Get News By ID Controller
-	static async show(req, res) {}
 }
 
 export default NewsController;

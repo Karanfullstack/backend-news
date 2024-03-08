@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload());
 
 // Routes
-import AuthRoute from "./routes/api.js";
+import AuthRoute from "./routes/http.js";
 app.use("/api", AuthRoute);
 
 const PORT = process.env.PORT || 3000;
