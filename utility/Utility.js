@@ -44,6 +44,12 @@ export default class Utility {
 			image: `${process.env.APP_URL}/images/${data.image}`,
 			created_at: data.created_at,
 			updated_at: data.updated_at,
+			reporter: {
+				id: data.user.id,
+				name: data.user.name,
+				email: data.user.email,
+				profile: data.user?.profile !== null ?	`${process.env.APP_URL}/images/${data.user.profile}` : null,
+			},
 		};
 	}
 }

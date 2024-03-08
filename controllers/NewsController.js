@@ -51,9 +51,47 @@ export class NewsController {
 	// Get News Controller
 	static async index(req, res) {
 		try {
-			const news = await prisma.news.findMany({});
+			let page = req.query.page || 1;
+			let limit = req.query.limit || 10;
+			const searchQuery = req.query.search || "";
+			if (page <= 0) {
+				page = 1;
+			}
+			if (limit <= 0 || limit > 100) {
+				limit = 10;
+			}
+			const offset = (page - 1) * limit;
+			const news = await prisma.news.findMany({
+				take: Number(limit),
+				skip: Number(offset),
+				where: {
+					title: {
+						contains: searchQuery.toLowerCase(),
+					},
+				},
+				include: {
+					user: {
+						select: {
+							id: true,
+							email: true,
+							name: true,
+							profile: true,
+						},
+					},
+				},
+			});
 			const data = news.map((item) => Utility.transformResponse(item));
-			return res.status(200).json({ success: true, data });
+			const newsCount = await prisma.news.count();
+			const totalPages = Math.ceil(newsCount / limit);
+			const hasMore = page < totalPages;
+			return res.status(200).json({
+				success: true,
+				data,
+				totalPages,
+				currentPage: page,
+				limit,
+				hasMore,
+			});
 		} catch (error) {
 			return res.status(500).json({ error: { message: error.message } });
 		}
