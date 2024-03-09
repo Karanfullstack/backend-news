@@ -1,16 +1,26 @@
 import express from "express";
 import dotenv from "dotenv";
 import fileUpload from "express-fileupload";
+import helmet from "helmet";
+import cors from "cors";
+import { limiter } from "./config/ratelimiter.js";
 const app = express();
 
 // middlewares
 dotenv.config();
 app.use(express.json());
-// static path
-
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(fileUpload());
+app.use(helmet());
+app.use(limiter);
+app.use(
+	cors({
+		origin: "http://localhost:3000",
+
+		// credentials: true, only for cookies and sessions purproses
+	})
+);
 
 // Routes
 import AuthRoute from "./routes/http.js";
