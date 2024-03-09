@@ -127,8 +127,8 @@ export class NewsController {
 			const newsID = req.params.id;
 			const user = req.user;
 			const body = req.body;
-			const validator = vine.compile(newsValidation);
-			const payload = await validator.validate(body);
+			// const validator = vine.compile(newsValidation);
+			// const payload = await validator.validate(body);
 
 			const news = await prisma.news.findUnique({
 				where: {
@@ -148,11 +148,17 @@ export class NewsController {
 					.status(404)
 					.json({ success: false, message: "Not Post Found" });
 			}
+
 			if (news.user_id !== user.id) {
 				return res
 					.status(401)
 					.json({ success: false, error: { message: "Unauthorized" } });
 			}
+
+			// Data to be update conditionally
+			let data = {};
+			if (body.title) data.title = body.title || news.title;
+			if (body.content) data.content = body.content || news.content;
 
 			const image = req.files?.image;
 			let fileName = undefined;
@@ -162,7 +168,6 @@ export class NewsController {
 					return res.status(400).json({ success: false, error: { message } });
 				}
 
-				console.log(image);
 				// Upload Image
 				fileName = Utility.uploadImage(image);
 				console.log(fileName);
@@ -170,10 +175,10 @@ export class NewsController {
 				Utility.deleteImage(news.image);
 			}
 			if (fileName) {
-				payload.image = fileName;
+				data.image = fileName;
 			}
 			await prisma.news.update({
-				data: payload,
+				data: data,
 				where: {
 					id: Number(newsID),
 					user_id: Number(user.id),
@@ -196,7 +201,42 @@ export class NewsController {
 	}
 
 	// Delete News Controller
-	static async destroy(req, res) {}
+	static async destroy(req, res) {
+		try {
+			const { id } = req.params;
+			const user = req.user;
+			const news = await prisma.news.findUnique({
+				where: {
+					id: Number(id),
+				},
+			});
+
+			if (!news) {
+				return res
+					.status(404)
+					.json({ success: false, message: "No post found" });
+			}
+			if (news.user_id !== user.id) {
+				return res
+					.status(401)
+					.json({ success: false, message: "Unauthorized" });
+			}
+			Utility.deleteImage(news.image);
+			await prisma.news.delete({
+				where: {
+					id: Number(id),
+				},
+			});
+			return res
+				.status(201)
+				.json({ success: true, message: "Post Deleted Sucessfully" });
+		} catch (error) {
+			console.log(error);
+			return res
+				.status(500)
+				.json({ success: false, message: error || "Something wrong happend" });
+		}
+	}
 }
 
 export default NewsController;
