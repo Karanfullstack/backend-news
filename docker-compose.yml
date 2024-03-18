@@ -1,0 +1,42 @@
+version: "2"
+
+services:
+  redis:
+    image: redis/redis-stack
+    restart: always
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    container_name: redis
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: karan
+      POSTGRES_PASSWORD: karan
+      POSTGRES_DB: newsDB
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DATABASE_URL: postgresql://karan:karan@postgres:5432/newsDB?schema=public
+      APP_URL: http://localhost:8000
+      PORT: 8000
+      SECRET: karan
+    volumes:
+      - .:/app
+      - ./node_modules:/app/node_modules
+
+volumes:
+  postgres-data:

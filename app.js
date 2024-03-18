@@ -18,7 +18,7 @@ app.use(
 	cors({
 		origin: "http://localhost:3000",
 
-		// credentials: true, only for cookies and sessions purproses
+		// credentials: true, only for cookies and sessions purproses.
 	})
 );
 
