@@ -4,6 +4,8 @@ import fileUpload from "express-fileupload";
 import helmet from "helmet";
 import cors from "cors";
 import { limiter } from "./config/ratelimiter.js";
+
+// initialize app
 const app = express();
 
 // middlewares

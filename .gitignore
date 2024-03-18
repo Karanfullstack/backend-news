@@ -1,4 +1,7 @@
 node_modules
 .env
 public/images*
+error.log
+combined.log
+
 

@@ -38,6 +38,7 @@
 		"@types/express-fileupload": "^1.4.4",
 		"@types/jsonwebtoken": "^9.0.6",
 		"nodemon": "^3.1.0",
-		"prisma": "^5.10.2"
+		"prisma": "^5.10.2",
+		"winston": "^3.12.0"
 	}
 }

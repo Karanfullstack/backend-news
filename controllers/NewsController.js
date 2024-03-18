@@ -4,6 +4,7 @@ import Utility from "../utility/Utility.js";
 import prisma from "../database/db.config.js";
 import { ResponseTransform } from "../response/response.js";
 import redisCache from "../config/redis.config.js";
+import { logger } from "../config/logs.config.js";
 export class NewsController {
 	// Create News Controller
 	static async store(req, res) {
@@ -95,6 +96,7 @@ export class NewsController {
 				hasMore,
 			});
 		} catch (error) {
+			logger.error(error);
 			return res.status(500).json({ error: { message: error.message } });
 		}
 	}
